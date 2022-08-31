@@ -1,0 +1,27 @@
+---
+BasedOnStyle: Google
+IndentWidth: 4
+---
+Language: Cpp
+PointerAlignment: Left
+ColumnLimit: 100
+IncludeBlocks: Regroup
+IncludeCategories:
+    # pch.h always comes first
+  - Regex: '^"pch\.h"$'
+    Priority: -1
+    # Generated files come right after the "main" include
+    # This should really say \.g\.(h|cpp) or whatever, but that crashes (!)
+    # the formatter, so we'll make do with matching whatever.x.h.
+  - Regex: '\..\.(h|cpp)"$'
+    Priority: 1
+    # Then <windows.h> when applicable
+  - Regex: '^<windows\.h>$'
+    Priority: 2
+    # Then <> and "" includes go in a single clump, one after the other
+  - Regex: '^<'
+    SortPriority: 29
+    Priority: 30
+  - Regex: '^"'
+    SortPriority: 30
+    Priority: 30
