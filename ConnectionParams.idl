@@ -1,0 +1,11 @@
+namespace blurt {
+
+runtimeclass ConnectionParams : Windows.UI.Xaml.Data.INotifyPropertyChanged {
+    ConnectionParams();
+    String Host;
+    String Port;
+    String UserName;
+    String Password;
+}
+
+}

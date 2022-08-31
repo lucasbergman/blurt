@@ -1,19 +1,18 @@
-﻿#pragma once
+#pragma once
 
 #include "MainPage.g.h"
 
+#include "ConnectionViewModel.h"
+
 namespace winrt::blurt::implementation {
 struct MainPage : MainPageT<MainPage> {
-    MainPage() {
-        // Xaml objects should not call InitializeComponent during construction.
-        // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
-    }
+    MainPage();
+    winrt::blurt::ConnectionViewModel MainViewModel() const noexcept { return view_model_; }
+    void Connect_Click(Windows::Foundation::IInspectable const& sender,
+                       Windows::UI::Xaml::RoutedEventArgs const& args);
 
-    int32_t MyProperty();
-    void MyProperty(int32_t value);
-
-    void ClickHandler(Windows::Foundation::IInspectable const& sender,
-                      Windows::UI::Xaml::RoutedEventArgs const& args);
+   private:
+    winrt::blurt::ConnectionViewModel view_model_{nullptr};
 };
 }  // namespace winrt::blurt::implementation
 

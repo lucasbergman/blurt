@@ -1,0 +1,12 @@
+import "ConnectionParams.idl";
+
+namespace blurt {
+
+[bindable]
+[default_interface]
+runtimeclass ConnectionViewModel {
+    ConnectionViewModel();
+    ConnectionParams Params { get; };
+}
+
+}

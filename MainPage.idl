@@ -1,9 +1,11 @@
-namespace blurt
-{
-    [default_interface]
-    runtimeclass MainPage : Windows.UI.Xaml.Controls.Page
-    {
-        MainPage();
-        Int32 MyProperty;
-    }
+import "ConnectionViewModel.idl";
+
+namespace blurt {
+
+[default_interface]
+runtimeclass MainPage : Windows.UI.Xaml.Controls.Page {
+    MainPage();
+    ConnectionViewModel MainViewModel { get; };
 }
+
+}  // namespace blurt
