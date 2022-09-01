@@ -79,6 +79,9 @@
     <Import Project="PropertySheet.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -107,6 +110,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="$(GeneratedFilesDir)Mumble.pb.h" />
     <ClInclude Include="ConnectionParams.h">
       <DependentUpon>ConnectionParams.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -146,6 +150,9 @@
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(GeneratedFilesDir)Mumble.pb.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ConnectionParams.cpp">
       <DependentUpon>ConnectionParams.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -180,8 +187,15 @@
     </Midl>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="Mumble.proto">
+      <FileType>Document</FileType>
+      <Command>$(VcpkgManifestRoot)\vcpkg_installed\$(VcpkgTriplet)\tools\protobuf\protoc.exe --error_format=msvs --cpp_out="$(GeneratedFilesDir.TrimEnd('\'))" %(Identity)</Command>
+      <Message>Compiling protobuf %(Identity)</Message>
+      <Outputs>$(GeneratedFilesDir)%(Filename).pb.h;$(GeneratedFilesDir)%(Filename).pb.cc</Outputs>
+    </CustomBuild>
     <None Include="packages.config" />
     <None Include="PropertySheet.props" />
+    <None Include="vcpkg.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

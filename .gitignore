@@ -1,4 +1,5 @@
 /.vs
 /Generated Files
 /packages
+/vcpkg_installed
 /x64

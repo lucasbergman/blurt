@@ -1,0 +1,9 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+    "name": "mumble",
+    "version": "0.0.1",
+    "builtin-baseline": "a2df2f95f4c4633c8b595bd3c205053aaff21aae",
+    "dependencies": [
+        "protobuf"
+    ]
+}
