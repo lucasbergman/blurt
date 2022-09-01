@@ -11,8 +11,8 @@ Xbox One.
 Here's a checklist—give or take a bit—I'd like to have complete before opening
 up to testing and bashing by users:
 
-- ❌ `network` - Connect to a server
-- ❌ `network` - Ping support to keep connections alive
+- ✔️ `network` - Connect to a server
+- ✔️ `network` - Ping support to keep connections alive
 - ❌ `network` - Gracefully handle server rejections
 - ❌ `network` - Disconnect cleanly from a server
 - ❌ `network` - Join a particular channel
