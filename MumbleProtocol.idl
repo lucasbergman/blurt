@@ -1,0 +1,11 @@
+namespace blurt.mumble {
+
+// WinRT representation of a Mumble wire message, a type and a run of bytes
+runtimeclass WireMessage {
+    WireMessage(UInt16 type_number, UInt8[] bytes);
+
+    UInt16 TypeNumber { get; };
+    UInt32 PayloadSize { get; };
+}
+
+}  // namespace blurt.mumble

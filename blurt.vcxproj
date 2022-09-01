@@ -121,6 +121,7 @@
       <DependentUpon>ConnectionViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="ControlSocket.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ControlPacket.h" />
     <ClInclude Include="App.h">
@@ -128,6 +129,9 @@
     </ClInclude>
     <ClInclude Include="MainPage.h">
       <DependentUpon>MainPage.xaml</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="WireMessage.h">
+      <DependentUpon>MumbleProtocol.idl</DependentUpon>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +168,7 @@
       <DependentUpon>ConnectionViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="ControlSocket.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -175,6 +180,9 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="WireMessage.cpp">
+      <DependentUpon>MumbleProtocol.idl</DependentUpon>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl">
@@ -189,6 +197,7 @@
     <Midl Include="MainPage.idl">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Midl>
+    <Midl Include="MumbleProtocol.idl" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Mumble.proto">

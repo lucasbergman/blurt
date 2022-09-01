@@ -11,6 +11,7 @@
     <Midl Include="MainPage.idl" />
     <Midl Include="ConnectionParams.idl" />
     <Midl Include="ConnectionViewModel.idl" />
+    <Midl Include="MumbleProtocol.idl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -19,11 +20,15 @@
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)Mumble.pb.cc" />
     <ClCompile Include="ControlPacket.cpp" />
+    <ClCompile Include="ControlSocket.cpp" />
+    <ClCompile Include="WireMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="$(GeneratedFilesDir)Mumble.pb.h" />
     <ClInclude Include="ControlPacket.h" />
+    <ClInclude Include="ControlSocket.h" />
+    <ClInclude Include="WireMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
