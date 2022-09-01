@@ -130,6 +130,9 @@
     <ClInclude Include="MainPage.h">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="ServerConnection.h">
+      <DependentUpon>MumbleProtocol.idl</DependentUpon>
+    </ClInclude>
     <ClInclude Include="WireMessage.h">
       <DependentUpon>MumbleProtocol.idl</DependentUpon>
     </ClInclude>
@@ -180,6 +183,9 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="ServerConnection.cpp">
+      <DependentUpon>MumbleProtocol.idl</DependentUpon>
+    </ClCompile>
     <ClCompile Include="WireMessage.cpp">
       <DependentUpon>MumbleProtocol.idl</DependentUpon>
     </ClCompile>

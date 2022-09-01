@@ -22,6 +22,7 @@
     <ClCompile Include="ControlPacket.cpp" />
     <ClCompile Include="ControlSocket.cpp" />
     <ClCompile Include="WireMessage.cpp" />
+    <ClCompile Include="ServerConnection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -29,6 +30,7 @@
     <ClInclude Include="ControlPacket.h" />
     <ClInclude Include="ControlSocket.h" />
     <ClInclude Include="WireMessage.h" />
+    <ClInclude Include="ServerConnection.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">

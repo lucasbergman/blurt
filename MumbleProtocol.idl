@@ -1,11 +1,25 @@
 namespace blurt.mumble {
 
+delegate void NetworkMessage(String s);
+
 // WinRT representation of a Mumble wire message, a type and a run of bytes
 runtimeclass WireMessage {
     WireMessage(UInt16 type_number, UInt8[] bytes);
 
     UInt16 TypeNumber { get; };
     UInt32 PayloadSize { get; };
+}
+
+// WinRT representation of a Mumble server connection
+runtimeclass ServerConnection : Windows.Foundation.IClosable {
+    ServerConnection();
+    Windows.Foundation.IAsyncAction Connect(String host, String port, String userName,
+                                            String password);
+
+    event NetworkMessage ConnectionSucceeded;
+    event NetworkMessage ConnectionFailed;
+    event NetworkMessage ConnectionClosed;
+    event NetworkMessage PacketReceived;
 }
 
 }  // namespace blurt.mumble

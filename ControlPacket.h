@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <vector>
 #include "Mumble.pb.h"
+#include "WireMessage.h"
 
 namespace winrt::blurt::mumble::implementation {
 
@@ -65,6 +66,11 @@ class ControlPacket {
     // Make a new ControlPacket by taking a copy of a string
     ControlPacket(ControlPacketType t, std::string s)
         : ControlPacket(t, std::vector<std::uint8_t>{s.data(), s.data() + s.size()}) {}
+
+    // Move a WireMessage efficiently to a new ControlPacket
+    ControlPacket(const mumble::WireMessage&& wire_msg)
+        : type_{ControlPacketTypeOf(wire_msg.TypeNumber())},
+          msg_{winrt::get_self<implementation::WireMessage>(wire_msg)->MovePayload()} {}
 
     ControlPacketType Type() const { return type_; }
     std::uint16_t TypeAsUInt() const { return static_cast<std::uint16_t>(type_); }
