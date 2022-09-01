@@ -18,10 +18,12 @@
     <ClCompile Include="MainPage.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)Mumble.pb.cc" />
+    <ClCompile Include="ControlPacket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="$(GeneratedFilesDir)Mumble.pb.h" />
+    <ClInclude Include="ControlPacket.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
