@@ -23,6 +23,7 @@
     <ClCompile Include="ControlSocket.cpp" />
     <ClCompile Include="WireMessage.cpp" />
     <ClCompile Include="ServerConnection.cpp" />
+    <ClCompile Include="AudioPacket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -31,6 +32,7 @@
     <ClInclude Include="ControlSocket.h" />
     <ClInclude Include="WireMessage.h" />
     <ClInclude Include="ServerConnection.h" />
+    <ClInclude Include="AudioPacket.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">

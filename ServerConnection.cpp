@@ -34,7 +34,8 @@ foundation::IAsyncAction ServerConnection::ReadControlPackets() {
             ControlPacket packet{std::move(wire_packet)};
             if (packet.Type() == ControlPacketType::UDPTunnel) {
                 // TODO: Handle incoming audio
-                event_packet_recv_(L"packet received: " + winrt::to_hstring(packet.DebugString()));
+                auto audio_packet = packet.ResolveAudioPacket();
+                event_packet_recv_(L"packet received: " + audio_packet.DebugString());
             } else {
                 event_packet_recv_(L"packet received: " + winrt::to_hstring(packet.DebugString()));
             }
