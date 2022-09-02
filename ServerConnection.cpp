@@ -33,9 +33,7 @@ foundation::IAsyncAction ServerConnection::ReadControlPackets() {
             // TODO: What happens on a read exception?
             ControlPacket packet{std::move(wire_packet)};
             if (packet.Type() == ControlPacketType::UDPTunnel) {
-                // TODO: Handle incoming audio
-                auto audio_packet = packet.ResolveAudioPacket();
-                event_packet_recv_(L"packet received: " + audio_packet.DebugString());
+                audio_packet_recv_(packet.ResolveAudioPacket());
             } else {
                 event_packet_recv_(L"packet received: " + winrt::to_hstring(packet.DebugString()));
             }
@@ -130,5 +128,11 @@ winrt::event_token ServerConnection::PacketReceived(mumble::NetworkMessage const
 }
 void ServerConnection::PacketReceived(winrt::event_token const& token) noexcept {
     event_packet_recv_.remove(token);
+}
+winrt::event_token ServerConnection::AudioPacketReceived(mumble::AudioMessage const& handler) {
+    return audio_packet_recv_.add(handler);
+}
+void ServerConnection::AudioPacketReceived(winrt::event_token const& token) noexcept {
+    audio_packet_recv_.remove(token);
 }
 }  // namespace winrt::blurt::mumble::implementation

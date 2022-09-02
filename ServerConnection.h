@@ -23,6 +23,8 @@ struct ServerConnection : ServerConnectionT<ServerConnection> {
     void ConnectionClosed(event_token const& token) noexcept;
     event_token PacketReceived(mumble::NetworkMessage const& handler);
     void PacketReceived(event_token const& token) noexcept;
+    event_token AudioPacketReceived(mumble::AudioMessage const& handler);
+    void AudioPacketReceived(event_token const& token) noexcept;
 
    private:
     Windows::Foundation::IAsyncAction SendPings();
@@ -35,6 +37,7 @@ struct ServerConnection : ServerConnectionT<ServerConnection> {
     event<mumble::NetworkMessage> event_conn_failed_;
     event<mumble::NetworkMessage> event_conn_closed_;
     event<mumble::NetworkMessage> event_packet_recv_;
+    event<mumble::AudioMessage> audio_packet_recv_;
 };
 }  // namespace winrt::blurt::mumble::implementation
 

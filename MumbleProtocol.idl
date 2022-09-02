@@ -1,7 +1,5 @@
 namespace blurt.mumble {
 
-delegate void NetworkMessage(String s);
-
 // WinRT representation of a Mumble wire message, a type and a run of bytes
 runtimeclass WireMessage {
     WireMessage(UInt16 type_number, UInt8[] bytes);
@@ -9,6 +7,34 @@ runtimeclass WireMessage {
     UInt16 TypeNumber { get; };
     UInt32 PayloadSize { get; };
 }
+
+enum AudioPacketType {
+    CELTAlpha = 0,
+    Ping = 1,
+    Speex = 2,
+    CELTBeta = 3,
+    Opus = 4,
+};
+
+// Represents an audio packet sent in Mumble's legacy datagram format.
+// Future versions of the protocol will use protobuf encoding for this;
+// that'll be nice, but it's going to while before we can rely on that being
+// supported. I've tried to make the underlying integer representations
+// here forward-compatible with the new protobuf definition.
+//
+// Realistically, this only supports Opus for audio right now.
+runtimeclass AudioPacket {
+    AudioPacketType Type { get; };
+    UInt32 Target { get; };
+    UInt32 SenderSession { get; };
+    UInt64 FrameSequence { get; };
+    Boolean IsTerminator { get; };
+    Boolean HasPositionInfo { get; };
+    UInt16 PayloadSize { get; };
+}
+
+delegate void NetworkMessage(String s);
+delegate void AudioMessage(AudioPacket ap);
 
 // WinRT representation of a Mumble server connection
 runtimeclass ServerConnection : Windows.Foundation.IClosable {
@@ -20,6 +46,7 @@ runtimeclass ServerConnection : Windows.Foundation.IClosable {
     event NetworkMessage ConnectionFailed;
     event NetworkMessage ConnectionClosed;
     event NetworkMessage PacketReceived;
+    event AudioMessage AudioPacketReceived;
 }
 
 }  // namespace blurt.mumble

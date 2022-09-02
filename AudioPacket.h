@@ -1,5 +1,7 @@
 #pragma once
 
+#include "mumble.AudioPacket.g.h"
+
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
@@ -11,24 +13,16 @@ struct AudioParseFailure : std::invalid_argument {
     AudioParseFailure(std::string s) : std::invalid_argument(s) {}
 };
 
-enum class AudioPacketType {
-    CELTAlpha = 0,
-    Ping = 1,
-    Speex = 2,
-    CELTBeta = 3,
-    Opus = 4,
-};
-
-class AudioPacket {
+struct AudioPacket : AudioPacketT<AudioPacket> {
    public:
     // Parse an audio packet from a chunk of bytes; can throw AudioParseFailure
     AudioPacket(const std::vector<std::uint8_t>& bytes);
 
     // Move a chunk of encoded bytes into a new audio packet
-    AudioPacket(AudioPacketType type, std::uint32_t frame_seq,
+    AudioPacket(mumble::AudioPacketType type, std::uint32_t frame_seq,
                 std::vector<std::uint8_t>&& encoded_bytes);
 
-    AudioPacketType Type() const { return type_; }
+    mumble::AudioPacketType Type() const { return type_; }
     std::uint32_t Target() const { return target_; }
     std::uint32_t SenderSession() const { return sender_session_; }
     std::uint64_t FrameSequence() const { return frame_seq_; }
@@ -43,7 +37,7 @@ class AudioPacket {
     winrt::hstring DebugString();
 
    private:
-    AudioPacketType type_;
+    mumble::AudioPacketType type_;
     std::uint32_t target_{0};
     std::uint32_t sender_session_{0};
     std::uint64_t frame_seq_;

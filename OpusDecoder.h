@@ -4,6 +4,7 @@
 #include <mutex>
 #include <vector>
 #include "AudioBuffer.h"
+#include "AudioPacket.h"
 #include "opus/opus.h"
 #include "winrt/Windows.Media.Audio.h"
 
@@ -14,7 +15,8 @@ class OpusDecoder {
     ~OpusDecoder();
 
     std::int32_t DecodeToBuffer(const std::vector<std::uint8_t>& encoded);
-    winrt::Windows::Media::AudioFrame ConsumeFrame(std::uint16_t samples);
+    std::int32_t DecodeToBuffer(const mumble::AudioPacket& packet);
+    winrt::Windows::Media::AudioFrame ConsumeFrameFromBuffer(std::uint16_t samples);
 
    private:
     struct ::OpusDecoder* decoder_{nullptr};
