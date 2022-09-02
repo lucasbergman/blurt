@@ -24,6 +24,7 @@
     <ClCompile Include="WireMessage.cpp" />
     <ClCompile Include="ServerConnection.cpp" />
     <ClCompile Include="AudioPacket.cpp" />
+    <ClCompile Include="OpusDecoder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -33,6 +34,8 @@
     <ClInclude Include="WireMessage.h" />
     <ClInclude Include="ServerConnection.h" />
     <ClInclude Include="AudioPacket.h" />
+    <ClInclude Include="AudioBuffer.h" />
+    <ClInclude Include="OpusDecoder.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
