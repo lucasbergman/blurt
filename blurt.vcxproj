@@ -113,8 +113,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="$(GeneratedFilesDir)Mumble.pb.h" />
+    <ClInclude Include="AudioParams.h" />
     <ClInclude Include="AudioBuffer.h" />
     <ClInclude Include="AudioPacket.h" />
+    <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="ConnectionParams.h">
       <DependentUpon>ConnectionParams.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -167,6 +169,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="AudioPacket.cpp" />
+    <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="ConnectionParams.cpp">
       <DependentUpon>ConnectionParams.idl</DependentUpon>
       <SubType>Code</SubType>

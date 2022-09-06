@@ -2,8 +2,10 @@
 
 #include "MainPage.g.h"
 
+#include "AudioSystem.h"
 #include "ConnectionViewModel.h"
 #include "ServerConnection.h"
+#include "winrt/Windows.Foundation.h"
 
 namespace winrt::blurt::implementation {
 struct MainPage : MainPageT<MainPage> {
@@ -14,7 +16,8 @@ struct MainPage : MainPageT<MainPage> {
 
    private:
     blurt::ConnectionViewModel view_model_{nullptr};
-    blurt::mumble::ServerConnection connection_{nullptr};
+    blurt::mumble::implementation::ServerConnection connection_;
+    AudioSystem audio_system_;
 };
 }  // namespace winrt::blurt::implementation
 

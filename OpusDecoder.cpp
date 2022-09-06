@@ -9,22 +9,17 @@ namespace winrt::blurt::audio::implementation {
 namespace media = winrt::Windows::Media;
 
 namespace {
-constexpr bool kAssumeStereo = true;
-constexpr std::int32_t kSampleRate = 48000;
-constexpr std::uint8_t kNumChannels = kAssumeStereo ? 2 : 1;
-
 // The maximum Opus can encode in one frame is 60 ms of audio.
 // (48000 Hz) * (60 ms) is 2880 samples per channel, so a 2-channel frame
 // decodes to at most 5760 floats, a bit over 11 KiB.
 constexpr auto kMaxFrameDuration = std::chrono::milliseconds(60);
-constexpr auto kMaxFrameSizeInFloatsPerChan =
-    kMaxFrameDuration * kSampleRate / std::chrono::seconds(1);
-constexpr auto kMaxFrameSizeInFloats = kMaxFrameSizeInFloatsPerChan * kNumChannels;
 }  // namespace
 
-OpusDecoder::OpusDecoder() : buffer_{kMaxFrameSizeInFloats * 50} {
+OpusDecoder::OpusDecoder(AudioSetup audio_setup)
+    : audio_setup_{audio_setup}, buffer_{audio_setup_.TotalSamplesPer(kMaxFrameDuration) * 50} {
     int err;
-    decoder_ = opus_decoder_create(kSampleRate, kNumChannels, &err);
+    decoder_ = opus_decoder_create(audio_setup_.SamplesPerChannelPerSecond(),
+                                   audio_setup_.NumChannels(), &err);
     if (err != OPUS_OK) abort();
 }
 
@@ -42,7 +37,7 @@ std::int32_t OpusDecoder::DecodeToBuffer(const std::vector<std::uint8_t>& input)
     if (samples_per_chan <= 0)
         throw std::exception{"OpusDecoder::Decode: zany result from opus_decoder_get_nb_samples()"};
 
-    auto needed_floats = samples_per_chan * kNumChannels;
+    auto needed_floats = samples_per_chan * audio_setup_.NumChannels();
     std::lock_guard lock{mutex_};
     if (buffer_.WriteCapacity() < needed_floats) {
         // We're out of buffer space, so tell Opus that we're dropping the packet
@@ -59,11 +54,11 @@ std::int32_t OpusDecoder::DecodeToBuffer(const std::vector<std::uint8_t>& input)
     return samples;
 }
 
-media::AudioFrame OpusDecoder::ConsumeAudio(std::uint16_t samples_per_chan) {
+media::AudioFrame OpusDecoder::ConsumeAudio(std::int32_t samples_per_chan) {
     std::lock_guard lock{mutex_};
     auto buffered_samples = static_cast<std::uint32_t>(buffer_.ReadCapacity());
     auto samples_to_read =
-        std::min<std::uint32_t>(buffered_samples, samples_per_chan * kNumChannels);
+        std::min<std::uint32_t>(buffered_samples, samples_per_chan * audio_setup_.NumChannels());
     if (samples_to_read == 0) return nullptr;
 
     // AudioFrame constructor is capacity in bytes:
