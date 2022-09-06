@@ -21,10 +21,11 @@
     <ClCompile Include="$(GeneratedFilesDir)Mumble.pb.cc" />
     <ClCompile Include="ControlPacket.cpp" />
     <ClCompile Include="ControlSocket.cpp" />
-    <ClCompile Include="WireMessage.cpp" />
     <ClCompile Include="ServerConnection.cpp" />
     <ClCompile Include="AudioPacket.cpp" />
     <ClCompile Include="OpusDecoder.cpp" />
+    <ClCompile Include="WireMessage.cpp" />
+    <ClCompile Include="OpusEncoder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -36,6 +37,7 @@
     <ClInclude Include="AudioPacket.h" />
     <ClInclude Include="AudioBuffer.h" />
     <ClInclude Include="OpusDecoder.h" />
+    <ClInclude Include="OpusEncoder.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">

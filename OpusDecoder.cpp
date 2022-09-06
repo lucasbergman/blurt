@@ -59,11 +59,7 @@ std::int32_t OpusDecoder::DecodeToBuffer(const std::vector<std::uint8_t>& input)
     return samples;
 }
 
-std::int32_t OpusDecoder::DecodeToBuffer(const mumble::AudioPacket& packet) {
-    return DecodeToBuffer(winrt::get_self<mumble::implementation::AudioPacket>(packet)->Payload());
-}
-
-media::AudioFrame OpusDecoder::ConsumeFrameFromBuffer(std::uint16_t samples_per_chan) {
+media::AudioFrame OpusDecoder::ConsumeAudio(std::uint16_t samples_per_chan) {
     std::lock_guard lock{mutex_};
     auto buffered_samples = static_cast<std::uint32_t>(buffer_.ReadCapacity());
     auto samples_to_read =

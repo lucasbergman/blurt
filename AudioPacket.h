@@ -1,7 +1,5 @@
 #pragma once
 
-#include "mumble.AudioPacket.g.h"
-
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
@@ -13,16 +11,38 @@ struct AudioParseFailure : std::invalid_argument {
     AudioParseFailure(std::string s) : std::invalid_argument(s) {}
 };
 
-struct AudioPacket : AudioPacketT<AudioPacket> {
+enum class AudioPacketType {
+    CELTAlpha = 0,
+    Ping = 1,
+    Speex = 2,
+    CELTBeta = 3,
+    Opus = 4,
+};
+
+// Represents an audio packet sent in Mumble's legacy datagram format.
+// Future versions of the protocol will use protobuf encoding for this;
+// that'll be nice, but it's going to while before we can rely on that being
+// supported. I've tried to make the underlying integer representations
+// here forward-compatible with the new protobuf definition.
+//
+// Realistically, this only supports Opus for audio right now.
+class AudioPacket {
    public:
-    // Parse an audio packet from a chunk of bytes; can throw AudioParseFailure
-    AudioPacket(const std::vector<std::uint8_t>& bytes);
+    // Parse an incoming audio packet; can throw AudioParseFailure
+    static AudioPacket FromIncomingBytes(const std::vector<std::uint8_t>& bytes) {
+        return AudioPacket(bytes, true);
+    }
+
+    // Parse an outgoing audio packet; can throw AudioParseFailure
+    static AudioPacket FromOutgoingBytes(const std::vector<std::uint8_t>& bytes) {
+        return AudioPacket(bytes, false);
+    }
 
     // Move a chunk of encoded bytes into a new audio packet
-    AudioPacket(mumble::AudioPacketType type, std::uint32_t frame_seq,
+    AudioPacket(AudioPacketType type, std::uint32_t frame_seq,
                 std::vector<std::uint8_t>&& encoded_bytes);
 
-    mumble::AudioPacketType Type() const { return type_; }
+    AudioPacketType Type() const { return type_; }
     std::uint32_t Target() const { return target_; }
     std::uint32_t SenderSession() const { return sender_session_; }
     std::uint64_t FrameSequence() const { return frame_seq_; }
@@ -33,11 +53,13 @@ struct AudioPacket : AudioPacketT<AudioPacket> {
         return static_cast<std::uint16_t>(payload_.size());
     }
     const std::vector<std::uint8_t>& Payload() const { return payload_; }
-    const std::vector<std::uint8_t> Encode() const;
+    const std::vector<std::uint8_t> EncodeOutgoing() const;
     winrt::hstring DebugString();
 
    private:
-    mumble::AudioPacketType type_;
+    AudioPacket(const std::vector<std::uint8_t>& bytes, bool contains_sender);
+
+    AudioPacketType type_;
     std::uint32_t target_{0};
     std::uint32_t sender_session_{0};
     std::uint64_t frame_seq_;
@@ -45,4 +67,5 @@ struct AudioPacket : AudioPacketT<AudioPacket> {
     bool has_position_info_;
     std::vector<std::uint8_t> payload_;
 };
+
 }  // namespace winrt::blurt::mumble::implementation

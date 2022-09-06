@@ -22,8 +22,8 @@ up to testing and bashing by users:
 - ❌ `UI` - Page displaying current server channels
 - ❌ `UI` - UI affordance for joining a channel
 - ❌ `UI` - Text box for a rolling log of connection data
-- ❌ `audio` - Decode Opus audio
-- ❌ `audio` - Encode Opus audio
+- ✔️ `audio` - Decode Opus audio
+- ✔️ `audio` - Encode Opus audio
 
 Note that this project was previously known as Maunder. It's changed to Blurt,
 primarily because that word is funnier.

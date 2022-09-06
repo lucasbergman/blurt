@@ -179,13 +179,16 @@ AudioPacketType TypeOf(std::uint8_t n) {
 }
 }  // namespace
 
-AudioPacket::AudioPacket(const std::vector<std::uint8_t>& bytes) {
+AudioPacket::AudioPacket(const std::vector<std::uint8_t>& bytes, bool contains_sender) {
     try {
         AudioPacketReader reader{bytes};
         auto first_byte = reader.ConsumeByte();
         type_ = TypeOf((first_byte & 0xe0) >> 5);
         target_ = first_byte & 0x1f;
-        sender_session_ = reader.ConsumeAndNarrowVarInt<decltype(sender_session_)>();
+
+        if (contains_sender)
+            sender_session_ = reader.ConsumeAndNarrowVarInt<decltype(sender_session_)>();
+
         frame_seq_ = reader.ConsumeVarInt();
         auto len_and_terminator = reader.ConsumeAndNarrowVarInt<std::uint16_t>();
 
@@ -217,7 +220,7 @@ AudioPacket::AudioPacket(AudioPacketType type, uint32_t frame_seq,
       has_position_info_{false},
       payload_{encoded_bytes} {}
 
-const std::vector<std::uint8_t> AudioPacket::Encode() const {
+const std::vector<std::uint8_t> AudioPacket::EncodeOutgoing() const {
     if (type_ != AudioPacketType::Opus) throw hresult_not_implemented{};
     if (payload_.size() > 0x1fff) throw std::out_of_range{"Audio payload size overflows 13 bits"};
 

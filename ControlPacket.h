@@ -125,10 +125,10 @@ class ControlPacket {
     RESOLVE_PROTO_IMPL(SuggestConfig)
     RESOLVE_PROTO_IMPL(PluginDataTransmission)
 
-    mumble::AudioPacket ResolveAudioPacket() const {
+    AudioPacket ResolveAudioPacket() const {
         if (type_ != ControlPacketType::UDPTunnel)
             throw std::invalid_argument("not an audio control packet");
-        return winrt::make<AudioPacket>(msg_);
+        return AudioPacket::FromIncomingBytes(msg_);
     }
 
     // From(proto) creates a ControlPacket from a protobuf message.
@@ -166,6 +166,11 @@ class ControlPacket {
     FROM_PROTO_IMPL(ServerConfig)
     FROM_PROTO_IMPL(SuggestConfig)
     FROM_PROTO_IMPL(PluginDataTransmission)
+
+    static ControlPacket From(AudioPacket&& ap) {
+        auto bytes = ap.EncodeOutgoing();
+        return ControlPacket(ControlPacketType::UDPTunnel, std::move(bytes));
+    }
 
    private:
     const ControlPacketType type_;

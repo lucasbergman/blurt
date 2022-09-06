@@ -2,11 +2,10 @@
 
 #include "ServerConnection.h"
 
-#include "mumble.ServerConnection.g.cpp"
-
 #include <chrono>
 #include <sstream>
 #include <utility>
+#include "AudioPacket.h"
 #include "ControlPacket.h"
 
 namespace winrt::blurt::mumble::implementation {
@@ -43,7 +42,7 @@ foundation::IAsyncAction ServerConnection::ReadControlPackets() {
     } catch (const winrt::hresult_error& e) {
         std::wstringstream ss;
         ss << "failed to read control packet: " << e.message().c_str();
-        event_conn_failed_(ss.str());
+        event_conn_failed_(winrt::hstring{ss.str()});
     }
 }
 
@@ -92,8 +91,14 @@ foundation::IAsyncAction ServerConnection::Connect(hstring host, hstring port, h
     } catch (const winrt::hresult_error& e) {
         std::wstringstream ss;
         ss << "connection setup failed: " << e.message().c_str();
-        event_conn_failed_(ss.str());
+        event_conn_failed_(winrt::hstring{ss.str()});
     }
+}
+
+foundation::IAsyncAction ServerConnection::SendAudioAsync(std::vector<std::uint8_t>&& bytes) {
+    AudioPacket ap(AudioPacketType::Opus, audio_frame_seq_, std::move(bytes));
+    audio_frame_seq_ += 2;  // TODO: magical constant only works for 20-ms audio frames
+    co_await socket_.WritePacketAsync(ControlPacket::From(std::move(ap)));
 }
 
 void ServerConnection::Close() noexcept {
@@ -105,31 +110,36 @@ void ServerConnection::Close() noexcept {
     closed_ = true;
 }
 
-winrt::event_token ServerConnection::ConnectionSucceeded(mumble::NetworkMessage const& handler) {
+winrt::event_token ServerConnection::ConnectionSucceeded(
+    winrt::delegate<winrt::hstring> const& handler) {
     return event_conn_succeeded_.add(handler);
 }
 void ServerConnection::ConnectionSucceeded(winrt::event_token const& token) noexcept {
     event_conn_succeeded_.remove(token);
 }
-winrt::event_token ServerConnection::ConnectionFailed(mumble::NetworkMessage const& handler) {
+winrt::event_token ServerConnection::ConnectionFailed(
+    winrt::delegate<winrt::hstring> const& handler) {
     return event_conn_failed_.add(handler);
 }
 void ServerConnection::ConnectionFailed(winrt::event_token const& token) noexcept {
     event_conn_succeeded_.remove(token);
 }
-winrt::event_token ServerConnection::ConnectionClosed(mumble::NetworkMessage const& handler) {
+winrt::event_token ServerConnection::ConnectionClosed(
+    winrt::delegate<winrt::hstring> const& handler) {
     return event_conn_closed_.add(handler);
 }
 void ServerConnection::ConnectionClosed(winrt::event_token const& token) noexcept {
     event_conn_closed_.remove(token);
 }
-winrt::event_token ServerConnection::PacketReceived(mumble::NetworkMessage const& handler) {
+winrt::event_token ServerConnection::PacketReceived(
+    winrt::delegate<winrt::hstring> const& handler) {
     return event_packet_recv_.add(handler);
 }
 void ServerConnection::PacketReceived(winrt::event_token const& token) noexcept {
     event_packet_recv_.remove(token);
 }
-winrt::event_token ServerConnection::AudioPacketReceived(mumble::AudioMessage const& handler) {
+winrt::event_token ServerConnection::AudioPacketReceived(
+    winrt::delegate<AudioPacket> const& handler) {
     return audio_packet_recv_.add(handler);
 }
 void ServerConnection::AudioPacketReceived(winrt::event_token const& token) noexcept {

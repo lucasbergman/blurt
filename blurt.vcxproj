@@ -114,9 +114,7 @@
   <ItemGroup>
     <ClInclude Include="$(GeneratedFilesDir)Mumble.pb.h" />
     <ClInclude Include="AudioBuffer.h" />
-    <ClInclude Include="AudioPacket.h">
-      <DependentUpon>MumbleProtocol.idl</DependentUpon>
-    </ClInclude>
+    <ClInclude Include="AudioPacket.h" />
     <ClInclude Include="ConnectionParams.h">
       <DependentUpon>ConnectionParams.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -127,6 +125,7 @@
     </ClInclude>
     <ClInclude Include="ControlSocket.h" />
     <ClInclude Include="OpusDecoder.h" />
+    <ClInclude Include="OpusEncoder.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ControlPacket.h" />
     <ClInclude Include="App.h">
@@ -135,11 +134,10 @@
     <ClInclude Include="MainPage.h">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </ClInclude>
-    <ClInclude Include="ServerConnection.h">
-      <DependentUpon>MumbleProtocol.idl</DependentUpon>
-    </ClInclude>
+    <ClInclude Include="ServerConnection.h" />
     <ClInclude Include="WireMessage.h">
       <DependentUpon>MumbleProtocol.idl</DependentUpon>
+      <SubType>Code</SubType>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -168,9 +166,7 @@
     <ClCompile Include="$(GeneratedFilesDir)Mumble.pb.cc">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="AudioPacket.cpp">
-      <DependentUpon>MumbleProtocol.idl</DependentUpon>
-    </ClCompile>
+    <ClCompile Include="AudioPacket.cpp" />
     <ClCompile Include="ConnectionParams.cpp">
       <DependentUpon>ConnectionParams.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -181,6 +177,7 @@
     </ClCompile>
     <ClCompile Include="ControlSocket.cpp" />
     <ClCompile Include="OpusDecoder.cpp" />
+    <ClCompile Include="OpusEncoder.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -192,11 +189,10 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="ServerConnection.cpp">
-      <DependentUpon>MumbleProtocol.idl</DependentUpon>
-    </ClCompile>
+    <ClCompile Include="ServerConnection.cpp" />
     <ClCompile Include="WireMessage.cpp">
       <DependentUpon>MumbleProtocol.idl</DependentUpon>
+      <SubType>Code</SubType>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
