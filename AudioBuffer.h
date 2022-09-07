@@ -3,8 +3,9 @@
 #include <algorithm>
 #include <assert.h>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
-#include <vector>
+#include <memory>
 
 namespace winrt::blurt::audio::implementation {
 
@@ -14,21 +15,24 @@ namespace winrt::blurt::audio::implementation {
 // for locking access from different threads.
 //
 // Throughout, this class deals in total samples, not samples per channel.
-template <typename SampleT = float>
+template <typename SampleT = float, typename SizeT = std::int32_t>
 class AudioBuffer {
    public:
-    using size_type = typename std::vector<SampleT>::size_type;
+    using size_type = typename SizeT;
 
     // Creates a buffer with a capacity to hold a given number of samples
-    AudioBuffer(size_type samples_capacity) : read_idx_{0}, write_idx_{0} {
+    AudioBuffer(size_type samples_capacity)
+        : read_idx_{0},
+          write_idx_{0},
+          buffer_{new SampleT[samples_capacity]},
+          size_{samples_capacity} {
         assert(samples_capacity > 0);
-        buffer_.resize(samples_capacity);
     }
 
     // Get the remaining capacity (in samples) the buffer can hold. If this
     // method returns N, then a subsequent call to GetWriteDest() with an
     // argument greater than N has undefined behavior.
-    size_type WriteCapacity() const { return buffer_.size() - write_idx_ + read_idx_; }
+    size_type WriteCapacity() const { return size_ - write_idx_ + read_idx_; }
 
     // Get a non-owned pointer where the caller can write N samples, using
     // up N samples of capacity in the buffer. It's the caller's
@@ -37,10 +41,10 @@ class AudioBuffer {
     SampleT* GetWriteDest(size_type num_samples) {
         assert(write_idx_ >= read_idx_);
         assert(WriteCapacity() >= num_samples);
-        if (write_idx_ + num_samples > buffer_.size()) {
+        if (write_idx_ + num_samples > size_) {
             // If write_idx_ + num_samples would overflow, we make room
             assert(read_idx_ > 0);
-            if (read_idx_ < buffer_.size()) {
+            if (read_idx_ < size_) {
                 // Not all the buffer has been consumed; move what remains
                 // read_idx_ samples to the left
                 std::memmove(&buffer_[0], &buffer_[read_idx_],
@@ -50,7 +54,7 @@ class AudioBuffer {
                 // Otherwise, the buffer has been completely read and both
                 // index are at the right-hand end; shortcut both indexes
                 // back to zero
-                assert(read_idx_ == write_idx_ && write_idx_ == buffer_.size());
+                assert(read_idx_ == write_idx_ && write_idx_ == size_);
                 write_idx_ = 0;
             }
             read_idx_ = 0;
@@ -111,7 +115,8 @@ class AudioBuffer {
     }
 
    private:
-    std::vector<SampleT> buffer_;
+    std::unique_ptr<SampleT[]> buffer_;
+    size_type size_;
     size_type read_idx_, write_idx_;
 };
 

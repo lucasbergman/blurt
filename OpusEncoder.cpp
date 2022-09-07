@@ -26,8 +26,8 @@ OpusEncoder::~OpusEncoder() { opus_encoder_destroy(encoder_); }
 
 void OpusEncoder::BufferRawAudio(media::AudioFrame const& frame) {
     auto read_buffer = frame.LockBuffer(media::AudioBufferAccessMode::Read);
-    auto input_len_bytes = read_buffer.Length();
-    std::uint32_t input_samples = input_len_bytes / sizeof(float);
+    std::int32_t input_len_bytes = read_buffer.Length();
+    std::int32_t input_samples = input_len_bytes / sizeof(float);
 
     std::lock_guard lock{mutex_};
     if (pcm_buffer_.WriteCapacity() < input_samples) {
