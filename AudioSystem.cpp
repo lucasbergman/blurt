@@ -81,7 +81,7 @@ Windows::Foundation::IAsyncAction AudioSystem::SetUp() {
     }
 }
 
-void AudioSystem::DecodeForOutput(const std::vector<std::uint8_t>& encoded_bytes) {
+void AudioSystem::DecodeForOutput(const ByteChunk& encoded_bytes) {
     opus_decoder_.DecodeToBuffer(encoded_bytes);
 }
 

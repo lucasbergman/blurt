@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
@@ -10,14 +11,14 @@ namespace winrt::blurt::mumble::implementation {
 
 struct WireMessage : WireMessageT<WireMessage> {
    public:
-    WireMessage(uint16_t type_number, winrt::array_view<std::uint8_t const> bytes)
+    WireMessage(std::uint16_t type_number, winrt::array_view<std::uint8_t const> bytes)
         : type_{type_number}, bytes_{bytes.begin(), bytes.end()} {}
     std::uint16_t TypeNumber() const { return type_; }
     std::uint32_t PayloadSize() const {
         // Guaranteed safe: array_view.size is uint32
-        return static_cast<uint32_t>(bytes_.size());
+        return static_cast<std::uint32_t>(bytes_.size());
     }
-    std::vector<uint8_t>&& MovePayload() { return std::move(bytes_); }
+    std::vector<std::uint8_t>&& StealPayload() { return std::move(bytes_); }
 
    private:
     const std::uint16_t type_;

@@ -4,6 +4,7 @@
 
 #include <limits>
 #include <sstream>
+#include <utility>
 
 namespace winrt::blurt::mumble::implementation {
 
@@ -16,8 +17,8 @@ constexpr auto kMaxPacketTypeValue = static_cast<int8_t>(AudioPacketType::Opus);
 // request or (in the case of ConsumeVarInt()) if the input is bogus.
 class AudioPacketReader {
    public:
-    AudioPacketReader(const std::vector<std::uint8_t>& bytes)
-        : data_{bytes.data()}, count_{static_cast<std::uint32_t>(bytes.size())} {}
+    AudioPacketReader(const ByteChunk& bytes)
+        : data_{bytes}, count_{static_cast<std::uint32_t>(bytes.size())} {}
 
     std::uint32_t Remaining() const { return count_; }
 
@@ -179,30 +180,38 @@ AudioPacketType TypeOf(std::uint8_t n) {
 }
 }  // namespace
 
-AudioPacket::AudioPacket(const std::vector<std::uint8_t>& bytes, bool contains_sender) {
+AudioPacket AudioPacket::FromBytes(const ByteChunk& bytes, bool contains_sender) {
     try {
         AudioPacketReader reader{bytes};
         auto first_byte = reader.ConsumeByte();
-        type_ = TypeOf((first_byte & 0xe0) >> 5);
-        target_ = first_byte & 0x1f;
+        auto type = TypeOf((first_byte & 0xe0) >> 5);
+        std::uint32_t target = first_byte & 0x1f;
 
-        if (contains_sender)
-            sender_session_ = reader.ConsumeAndNarrowVarInt<decltype(sender_session_)>();
+        std::uint32_t sender_session{0};
+        if (contains_sender) sender_session = reader.ConsumeAndNarrowVarInt<std::uint32_t>();
 
-        frame_seq_ = reader.ConsumeVarInt();
+        auto frame_seq = reader.ConsumeVarInt();
         auto len_and_terminator = reader.ConsumeAndNarrowVarInt<std::uint16_t>();
 
         // This part of the format guarantees that the payload length is
         // expressible in 13 bits, so using uint16 for payload size is safe
         std::uint16_t len = len_and_terminator & 0x1fff;
 
-        is_terminator_ = (len_and_terminator & 0x2000) != 0;
+        bool is_terminator = (len_and_terminator & 0x2000) != 0;
         auto remaining = reader.Remaining();
         if (remaining != len && remaining != len + 12u) {
             throw AudioParseFailure("invalid number of bytes remaining in datagram");
         }
-        has_position_info_ = remaining != len;
-        payload_ = reader.ConsumeBytes(len);
+        bool has_position_info = remaining != len;
+        auto payload = reader.ConsumeBytes(len);
+
+        return AudioPacket{type,
+                           target,
+                           frame_seq,
+                           sender_session,
+                           is_terminator,
+                           has_position_info,
+                           std::move(payload)};
     } catch (const std::out_of_range& e) {
         std::stringstream ss;
         ss << "failed datagram packet parse: " << e.what();
@@ -210,27 +219,17 @@ AudioPacket::AudioPacket(const std::vector<std::uint8_t>& bytes, bool contains_s
     }
 }
 
-AudioPacket::AudioPacket(AudioPacketType type, uint32_t frame_seq,
-                         std::vector<std::uint8_t>&& encoded_bytes)
-    : type_{type},
-      target_{0},
-      frame_seq_{frame_seq},
-      sender_session_{0},
-      is_terminator_{false},
-      has_position_info_{false},
-      payload_{encoded_bytes} {}
-
-const std::vector<std::uint8_t> AudioPacket::EncodeOutgoing() const {
+ByteChunk AudioPacket::EncodeOutgoing() const {
     if (type_ != AudioPacketType::Opus) throw hresult_not_implemented{};
     if (payload_.size() > 0x1fff) throw std::out_of_range{"Audio payload size overflows 13 bits"};
 
-    std::vector<uint8_t> result;
-    uint8_t type_and_target = (static_cast<uint8_t>(type_) << 5) | (target_ & 0x1f);
+    std::vector<std::uint8_t> result;
+    std::uint8_t type_and_target = (static_cast<std::uint8_t>(type_) << 5) | (target_ & 0x1f);
     result.push_back(type_and_target);
 
     WriteVarIntTo(result, frame_seq_);
 
-    uint16_t len_and_terminator = payload_.size() & 0x1fff;
+    auto len_and_terminator = static_cast<std::uint16_t>(payload_.size()) | 0x1fff;
     if (is_terminator_) len_and_terminator |= 0x2000;
     WriteVarIntTo(result, len_and_terminator);
     result.insert(result.end(), payload_.begin(), payload_.end());

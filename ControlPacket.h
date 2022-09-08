@@ -5,8 +5,10 @@
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 #include "AudioPacket.h"
+#include "ByteChunk.h"
 #include "Mumble.pb.h"
 #include "WireMessage.h"
 
@@ -62,27 +64,26 @@ class PacketParseError : public std::exception {
 
 class ControlPacket {
    public:
-    ControlPacket(ControlPacketType t, std::vector<std::uint8_t>&& msg) : type_{t}, msg_{msg} {}
+    // Move a vector of bytes efficiently to a new ControlPacket
+    ControlPacket(ControlPacketType t, std::vector<std::uint8_t>&& msg)
+        : type_{t}, msg_{std::move(msg)} {}
+
+    // Move a byte chunk efficiently to a new ControlPacket
+    ControlPacket(ControlPacketType t, ByteChunk&& msg) : type_{t}, msg_{std::move(msg)} {}
 
     // Make a new ControlPacket by taking a copy of a string
-    ControlPacket(ControlPacketType t, std::string s)
-        : ControlPacket(t, std::vector<std::uint8_t>{s.data(), s.data() + s.size()}) {}
+    ControlPacket(ControlPacketType t, std::string s) : type_{t}, msg_{ByteChunk::CopyOf(s)} {}
 
     // Move a WireMessage efficiently to a new ControlPacket
-    ControlPacket(const mumble::WireMessage&& wire_msg)
+    ControlPacket(mumble::WireMessage&& wire_msg)
         : type_{ControlPacketTypeOf(wire_msg.TypeNumber())},
-          msg_{winrt::get_self<implementation::WireMessage>(wire_msg)->MovePayload()} {}
+          msg_{winrt::get_self<implementation::WireMessage>(wire_msg)->StealPayload()} {}
 
     ControlPacketType Type() const { return type_; }
     std::uint16_t TypeAsUInt() const { return static_cast<std::uint16_t>(type_); }
-    const std::vector<std::uint8_t>& Bytes() const { return msg_; }
+    std::int32_t PayloadSize() const { return msg_.size(); }
+    const std::vector<std::uint8_t>& Bytes() const { return msg_.Bytes(); }
     std::string DebugString() const;
-
-    template <typename T>
-    T Size() const {
-        assert(msg_.size() < std::numeric_limits<T>::max());
-        return static_cast<T>(msg_.size());
-    }
 
     // Resolve<ControlPacketType::T>() parses the packet's payload into the
     // protobuf message of type MumbleProto::T; throws PacketParseError if the
@@ -91,8 +92,7 @@ class ControlPacket {
     template <ControlPacketType Ty>                                                     \
     std::enable_if_t<Ty == ControlPacketType::T, MumbleProto::T> ResolveProto() const { \
         MumbleProto::T result;                                                          \
-        assert(msg_.size() < std::numeric_limits<int>::max());                          \
-        if (!result.ParseFromArray(msg_.data(), static_cast<int>(msg_.size())))         \
+        if (!result.ParseFromArray(msg_, msg_.size()))                                  \
             throw PacketParseError("invalid protobuf message");                         \
         return result;                                                                  \
     }
@@ -174,7 +174,7 @@ class ControlPacket {
 
    private:
     const ControlPacketType type_;
-    const std::vector<std::uint8_t> msg_;
+    const ByteChunk msg_;
 };
 
 }  // namespace winrt::blurt::mumble::implementation

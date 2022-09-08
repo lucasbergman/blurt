@@ -27,7 +27,7 @@ Windows::Foundation::IAsyncAction MainPage::Connect_Click(IInspectable const&,
     connection_.ConnectionFailed(OnMessage);
     connection_.ConnectionClosed(OnMessage);
     connection_.PacketReceived(OnMessage);
-    connection_.AudioPacketReceived([this](mumble::implementation::AudioPacket packet) {
+    connection_.AudioPacketReceived([this](const mumble::implementation::AudioPacket& packet) {
         audio_system_.DecodeForOutput(packet.Payload());
     });
     co_await connection_.Connect(params.Host(), params.Port(), params.UserName(),

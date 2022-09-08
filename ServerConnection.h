@@ -26,7 +26,7 @@ class ServerConnection {
     void ConnectionClosed(winrt::event_token const& token) noexcept;
     winrt::event_token PacketReceived(winrt::delegate<winrt::hstring> const& handler);
     void PacketReceived(winrt::event_token const& token) noexcept;
-    winrt::event_token AudioPacketReceived(winrt::delegate<AudioPacket> const& handler);
+    winrt::event_token AudioPacketReceived(winrt::delegate<const AudioPacket&> const& handler);
     void AudioPacketReceived(winrt::event_token const& token) noexcept;
 
    private:
@@ -41,6 +41,6 @@ class ServerConnection {
     winrt::event<winrt::delegate<winrt::hstring>> event_conn_failed_;
     winrt::event<winrt::delegate<winrt::hstring>> event_conn_closed_;
     winrt::event<winrt::delegate<winrt::hstring>> event_packet_recv_;
-    winrt::event<winrt::delegate<AudioPacket>> audio_packet_recv_;
+    winrt::event<winrt::delegate<const AudioPacket&>> audio_packet_recv_;
 };
 }  // namespace winrt::blurt::mumble::implementation

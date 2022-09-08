@@ -41,6 +41,7 @@
     <ClInclude Include="OpusEncoder.h" />
     <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="AudioParams.h" />
+    <ClInclude Include="ByteChunk.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">

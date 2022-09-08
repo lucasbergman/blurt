@@ -2,9 +2,9 @@
 
 #include <cstdint>
 #include <mutex>
-#include <vector>
 #include "AudioBuffer.h"
 #include "AudioParams.h"
+#include "ByteChunk.h"
 #include "opus/opus.h"
 #include "winrt/Windows.Media.Audio.h"
 
@@ -16,7 +16,7 @@ class OpusDecoder {
 
     // Decode the given audio bytes to the internal buffer. This is thread-safe
     // to be used concurrently with ConsumeFrame().
-    std::int32_t DecodeToBuffer(std::vector<std::uint8_t> const& encoded);
+    std::int32_t DecodeToBuffer(const ByteChunk& encoded);
 
     // Read PCM audio from the internal buffer, up to the given number of
     // samples per channel; returns nullptr if the buffer is empty. This

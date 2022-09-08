@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "ByteChunk.h"
 #include "OpusDecoder.h"
 #include "OpusEncoder.h"
 #include "winrt/Windows.Foundation.h"
@@ -14,7 +15,7 @@ class AudioSystem {
    public:
     AudioSystem() = default;
     Windows::Foundation::IAsyncAction SetUp();
-    void DecodeForOutput(const std::vector<std::uint8_t>& encoded_bytes);
+    void DecodeForOutput(const ByteChunk& encoded_bytes);
 
     winrt::event_token EncodedCaptureReady(
         winrt::delegate<std::vector<std::uint8_t>> const& handler) {

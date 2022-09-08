@@ -139,7 +139,7 @@ void ServerConnection::PacketReceived(winrt::event_token const& token) noexcept 
     event_packet_recv_.remove(token);
 }
 winrt::event_token ServerConnection::AudioPacketReceived(
-    winrt::delegate<AudioPacket> const& handler) {
+    winrt::delegate<const AudioPacket&> const& handler) {
     return audio_packet_recv_.add(handler);
 }
 void ServerConnection::AudioPacketReceived(winrt::event_token const& token) noexcept {

@@ -73,7 +73,7 @@ foundation::IAsyncAction ControlSocket::WritePacketAsync(ControlPacket&& packet)
     writer.ByteOrder(streams::ByteOrder::BigEndian);
 
     writer.WriteUInt16(packet.TypeAsUInt());
-    writer.WriteUInt32(packet.Size<std::uint32_t>());
+    writer.WriteUInt32(packet.PayloadSize());
     writer.WriteBytes(packet.Bytes());
     co_await writer.StoreAsync();
     writer.DetachStream();

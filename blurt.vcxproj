@@ -117,6 +117,7 @@
     <ClInclude Include="AudioBuffer.h" />
     <ClInclude Include="AudioPacket.h" />
     <ClInclude Include="AudioSystem.h" />
+    <ClInclude Include="ByteChunk.h" />
     <ClInclude Include="ConnectionParams.h">
       <DependentUpon>ConnectionParams.idl</DependentUpon>
       <SubType>Code</SubType>

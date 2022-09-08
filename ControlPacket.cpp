@@ -96,7 +96,7 @@ std::string ControlPacket::DebugString() const {
     google::protobuf::DynamicMessageFactory factory;
     auto* protomsg = factory.GetPrototype(it->second);
     std::unique_ptr<google::protobuf::Message> msg{protomsg->New()};
-    if (msg->ParseFromArray(msg_.data(), Size<int>())) {
+    if (msg->ParseFromArray(msg_, msg_.size())) {
         result << msg->Utf8DebugString();
     } else {
         result << "protobuf parse failed";

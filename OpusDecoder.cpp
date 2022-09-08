@@ -25,11 +25,11 @@ OpusDecoder::OpusDecoder(AudioSetup audio_setup)
 
 OpusDecoder::~OpusDecoder() { opus_decoder_destroy(decoder_); }
 
-std::int32_t OpusDecoder::DecodeToBuffer(const std::vector<std::uint8_t>& input) {
+std::int32_t OpusDecoder::DecodeToBuffer(const ByteChunk& input) {
     assert(input.size() < std::numeric_limits<std::int32_t>::max());
     auto input_size = static_cast<std::int32_t>(input.size());
 
-    int samples_per_chan = opus_decoder_get_nb_samples(decoder_, input.data(), input_size);
+    int samples_per_chan = opus_decoder_get_nb_samples(decoder_, input, input_size);
     if (samples_per_chan == OPUS_INVALID_PACKET)
         throw std::exception{"OpusDecoder::Decode: bogus audio packet"};
     if (samples_per_chan == OPUS_BAD_ARG)
@@ -45,7 +45,7 @@ std::int32_t OpusDecoder::DecodeToBuffer(const std::vector<std::uint8_t>& input)
         return 0;
     }
     auto samples =
-        opus_decode_float(decoder_, input.data(), input_size, buffer_.GetWriteDest(needed_floats),
+        opus_decode_float(decoder_, input, input_size, buffer_.GetWriteDest(needed_floats),
                           samples_per_chan, 0 /* decode_fec */);
     if (samples <= 0) throw std::exception{"OpusDecoder::Decode: decode step failed; possible bug"};
     if (samples < samples_per_chan)
